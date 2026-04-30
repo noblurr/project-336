@@ -5,11 +5,11 @@ Research question:
 Does depreciation of the Kazakhstani tenge, predicted by changes in global Brent crude oil prices, increase consumer price inflation?
 
 Main finding:
-The OLS relationship between tenge depreciation and monthly inflation is positive. The preferred Brent-IV estimate is negative, statistically insignificant, and has a modest first stage, so the paper concludes that the provided data do not support the claim that Brent-predicted depreciation increases CPI inflation.
+The OLS relationship between tenge depreciation and monthly inflation is positive. The role of oil price as an IV is negative, however statistically insignificant and has a small effect at first stage model, thus we can conclude that our data does not support our hypothesis.
 
 How to run the replication package:
 1. Open Oil_Price_Shocks_Kazakhstan.Rproj in RStudio.
-2. Run source("run_all.R") from the project root.
+2. Run source ("run_all.R") from the project root.
 3. The script rebuilds the cleaned data, estimation tables, figures, robustness checks, and the paper PDF.
 
 Required R packages:
