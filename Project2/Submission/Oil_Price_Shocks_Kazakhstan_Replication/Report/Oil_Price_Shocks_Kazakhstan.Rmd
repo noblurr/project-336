@@ -1,0 +1,269 @@
+---
+title: "Oil Price Shocks, Exchange Rate, and Inflation in Kazakhstan"
+subtitle: "ECON 336 - Programming for Economics"
+author: ""
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output:
+  pdf_document:
+    latex_engine: pdflatex
+    number_sections: true
+    toc: false
+fontsize: 11pt
+geometry: margin=1in
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, fig.align = "center")
+
+setup_candidates <- c(
+  "../Code_database/00_setup.R",
+  "Code_database/00_setup.R",
+  "00_setup.R"
+)
+source(setup_candidates[file.exists(setup_candidates)][1])
+
+if (!file.exists(path_here("Output", "table3_regression_results.csv"))) {
+  source(path_here("Code_estimation", "02_estimate_results.R"))
+}
+if (!file.exists(path_here("Output", "table4_robustness_checks.csv"))) {
+  source(path_here("Code_appendix", "03_robustness_checks.R"))
+}
+
+analysis_data <- read_csv(path_here("Derived", "monthly_analysis_data.csv"), show_col_types = FALSE) %>%
+  mutate(date = as.Date(date))
+desc <- read_csv(path_here("Output", "table1_descriptive_stats.csv"), show_col_types = FALSE)
+first_stage <- read_csv(path_here("Output", "table2_first_stage_summary.csv"), show_col_types = FALSE)
+reg_results <- read_csv(path_here("Output", "table3_regression_results.csv"), show_col_types = FALSE)
+robustness <- read_csv(path_here("Output", "table4_robustness_checks.csv"), show_col_types = FALSE)
+
+fmt <- function(x, digits = 3) formatC(x, format = "f", digits = digits)
+fmt_p <- function(x) ifelse(x < 0.001, "<0.001", fmt(x, 3))
+
+sample_start <- min(analysis_data$date[!is.na(analysis_data$lag_inflation) & analysis_data$date >= as.Date("2000-03-01")])
+est_dates <- analysis_data %>%
+  filter(date >= as.Date("2000-03-01"), date <= as.Date("2019-01-01"), !is.na(lag_inflation))
+sample_end <- max(est_dates$date)
+n_obs <- reg_results$n[reg_results$model == "IV: Brent instrument"]
+
+fs_beta <- first_stage$estimate[1]
+fs_f <- first_stage$first_stage_f[1]
+iv_beta <- reg_results$estimate[reg_results$model == "IV: Brent instrument"]
+iv_se <- reg_results$std_error[reg_results$model == "IV: Brent instrument"]
+iv_p <- reg_results$p_value[reg_results$model == "IV: Brent instrument"]
+iv_ten <- reg_results$ten_percent_effect[reg_results$model == "IV: Brent instrument"]
+iv_ten_low <- reg_results$ten_percent_low[reg_results$model == "IV: Brent instrument"]
+iv_ten_high <- reg_results$ten_percent_high[reg_results$model == "IV: Brent instrument"]
+ols_beta <- reg_results$estimate[reg_results$model == "OLS"]
+```
+
+# Abstract
+
+This project asks whether depreciation of the Kazakhstani tenge increases consumer price inflation when the depreciation is predicted by changes in global Brent crude oil prices. I build a monthly dataset for Kazakhstan by combining Brent prices, the USD/KZT exchange rate, consumer price inflation, and annual macroeconomic context variables. The main specification is a two-stage least squares model: the first stage uses monthly log changes in Brent oil prices to predict monthly log changes in USD/KZT, and the second stage estimates the effect of predicted tenge depreciation on monthly CPI inflation. The baseline sample contains `r n_obs` monthly observations from `r format(sample_start, '%B %Y')` through `r format(sample_end, '%B %Y')`. The first stage is negative, as expected for an oil-exporting economy: a 10 percent increase in Brent prices predicts about `r fmt(10 * fs_beta)` percentage points less tenge depreciation. However, the preferred IV estimate does not show that Brent-predicted depreciation increases inflation. A 10 percent predicted depreciation is associated with a `r fmt(iv_ten)` percentage-point change in monthly inflation, with a 95 percent confidence interval from `r fmt(iv_ten_low)` to `r fmt(iv_ten_high)`. OLS shows a positive association, but the IV result is statistically insignificant and has the opposite sign, suggesting either weak pass-through in this design or violation of the exclusion restriction because oil prices can affect Kazakhstan through fiscal revenue, domestic energy costs, and broader macroeconomic expectations.
+
+# Research Question and Motivation
+
+Kazakhstan is a useful case for studying exchange-rate pass-through because the economy is highly exposed to oil prices and the tenge has experienced several large exchange-rate movements during the sample period. In the raw data, Brent prices, USD/KZT, and inflation move together around major stress episodes such as 2008-2009 and 2014-2016. These episodes make the question economically important: when a depreciation happens, households care about whether it quickly appears in consumer prices, and policymakers care about whether inflation is mainly imported through the exchange rate or driven by domestic demand.
+
+The research question is:
+
+> Does depreciation of the Kazakhstani tenge, predicted by changes in global Brent crude oil prices, increase consumer price inflation?
+
+The phrase "predicted by Brent crude oil prices" is important. A simple regression of inflation on the exchange rate may be biased because the exchange rate responds to the same inflation expectations, policy changes, and macroeconomic shocks that influence prices. I therefore use Brent oil price changes as an instrument for tenge depreciation. Kazakhstan is an oil producer, so negative oil price shocks should weaken export revenue, reduce foreign-exchange inflows, and put downward pressure on the tenge. The instrumented estimate is intended to isolate the part of depreciation that comes from external oil-market shocks rather than from domestic inflation itself.
+
+This project connects to the exchange-rate pass-through literature, which studies how exchange-rate movements affect import prices and consumer prices. A common result in this literature is that pass-through is incomplete and varies by country, monetary-policy credibility, inflation history, and the imported share of consumption. For Kazakhstan, the topic is especially relevant because oil prices can move the exchange rate even when domestic consumer demand has not changed. That gives the project a clear empirical source of variation, while also creating a real identification challenge: oil prices may affect inflation through channels other than the exchange rate.
+
+# Data
+
+The replication package uses the raw files provided in the project folder. Daily Brent crude oil prices are from the FRED file `fred_dcoilbrenteu.csv`. Daily USD/KZT exchange rates are from the National Bank of Kazakhstan file `nationalbank_usd_kzt_exchange_rate.xlsx`. Monthly CPI data are from `kazakhstan_indexcpi_statbureau.csv`, where each month is reported as an index with the previous month equal to 100. The World Bank macro file is used for annual context and one robustness check. Additional CPI source spreadsheets are retained in `Raw_data` for documentation but are not needed for the baseline monthly estimation.
+
+The key limitation is that the monthly CPI file ends in January 2019. Brent and exchange-rate files continue beyond that date, but the estimation must stop where the monthly inflation outcome stops. The final baseline sample runs from March 2000 through January 2019 because one lag of inflation is included as a control.
+
+The cleaning code makes three main transformations. First, daily Brent prices are averaged to the month and converted into monthly log changes:
+
+\[
+\Delta oil_t = 100 \times \left[\log(Brent_t) - \log(Brent_{t-1})\right].
+\]
+
+Second, daily exchange rates are averaged to the month and converted into tenge depreciation:
+
+\[
+\Delta e_t = 100 \times \left[\log(USD/KZT_t) - \log(USD/KZT_{t-1})\right].
+\]
+
+Because the exchange rate is tenge per US dollar, a positive value means the tenge depreciated. Third, CPI inflation is constructed from the monthly CPI index:
+
+\[
+\pi_t = 100 \times \log(CPIIndex_t / 100).
+\]
+
+This makes inflation, depreciation, and oil price changes comparable as monthly log percentage changes.
+
+```{r descriptive-table}
+desc_print <- desc %>%
+  mutate(
+    variable = dplyr::recode(
+      variable,
+      inflation_mom = "Monthly CPI inflation",
+      dep_kzt = "Tenge depreciation",
+      oil_log_change = "Brent log change",
+      brent_price = "Brent price",
+      usd_kzt = "USD/KZT"
+    ),
+    across(where(is.numeric), ~ round(.x, 3))
+  )
+
+knitr::kable(
+  desc_print,
+  caption = "Descriptive statistics for the estimation sample",
+  booktabs = TRUE
+)
+```
+
+```{r fig1, out.width='94%', fig.cap='Monthly inflation, exchange rate, and Brent oil prices'}
+knitr::include_graphics(path_here("Output", "figure1_time_series.png"))
+```
+
+Figure 1 shows the basic time-series patterns. The exchange rate is relatively stable for parts of the early sample and then rises sharply during depreciation episodes. Inflation is usually low month to month, but it spikes around large exchange-rate movements. Brent prices are volatile, especially during the global financial crisis and the 2014-2016 oil-price decline. These patterns motivate the instrumental-variables design: oil price shocks are visible in the exchange-rate series and provide external variation in tenge depreciation.
+
+# Econometric Model
+
+The baseline model is a monthly two-stage least squares specification. The first stage is:
+
+\[
+\Delta e_t = \alpha_0 + \alpha_1 \Delta oil_t + \rho \pi_{t-1} + \lambda_m + v_t,
+\]
+
+where \(\Delta e_t\) is monthly tenge depreciation, \(\Delta oil_t\) is the monthly Brent log change, \(\pi_{t-1}\) is lagged monthly inflation, and \(\lambda_m\) are month fixed effects. The month fixed effects absorb normal seasonality in prices and exchange-rate patterns.
+
+The second stage is:
+
+\[
+\pi_t = \beta \widehat{\Delta e_t} + \gamma \pi_{t-1} + \lambda_m + u_t.
+\]
+
+The parameter of interest is \(\beta\). It measures the percentage-point change in monthly CPI inflation caused by a 1 percent depreciation of the tenge, using only the depreciation predicted by Brent oil price shocks. The corresponding effect of a 10 percent predicted depreciation is \(10\beta\).
+
+The identifying assumptions are:
+
+1. **Relevance.** Brent price changes must predict tenge depreciation. This is plausible because oil is a major export revenue source for Kazakhstan, and lower oil prices tend to weaken the currency.
+2. **Exclusion.** Conditional on lagged inflation and month fixed effects, Brent price changes must affect monthly CPI inflation only through the exchange rate. This assumption is the most demanding. Oil prices could also affect domestic fuel prices, government revenue, expectations, or demand. For that reason, the estimate should be read as an IV pass-through estimate under a maintained exclusion assumption, not as a completely mechanical causal fact.
+3. **Timing and exogeneity.** Kazakhstan's monthly CPI inflation does not drive global Brent prices. This is credible because Kazakhstan is small relative to the global oil market.
+
+All reported standard errors are Newey-West standard errors with four lags. This choice allows for short-run serial correlation and heteroskedasticity in monthly macroeconomic data.
+
+# Results
+
+```{r fig2, out.width='88%', fig.cap='First-stage relationship between Brent changes and tenge depreciation'}
+knitr::include_graphics(path_here("Output", "figure2_first_stage.png"))
+```
+
+The first-stage coefficient on Brent price changes is `r fmt(fs_beta)`. This means that a 10 percent increase in Brent prices predicts `r fmt(10 * fs_beta)` percentage points of tenge depreciation. Since the coefficient is negative, the interpretation is appreciation pressure when oil prices increase and depreciation pressure when oil prices fall. The robust first-stage F statistic is `r fmt(fs_f)`. This shows statistically visible relevance, but it is below the common rule-of-thumb value of 10, so the IV estimates should be interpreted with weak-instrument caution.
+
+```{r first-stage-table}
+fs_print <- first_stage %>%
+  transmute(
+    coefficient = "Brent oil log change",
+    estimate = round(estimate, 3),
+    std_error = round(std_error, 3),
+    p_value = fmt_p(p_value),
+    first_stage_f = round(first_stage_f, 2),
+    n = n
+  )
+
+knitr::kable(
+  fs_print,
+  caption = "First-stage estimate: Brent price changes predicting tenge depreciation",
+  booktabs = TRUE
+)
+```
+
+The main second-stage results are in Table 3. The OLS estimate is included as a comparison, but the preferred specification is the IV model because it uses Brent-predicted depreciation.
+
+```{r regression-table}
+reg_print <- reg_results %>%
+  transmute(
+    model,
+    estimate = round(estimate, 3),
+    std_error = round(std_error, 3),
+    p_value = fmt_p(p_value),
+    ci_95 = paste0("[", round(conf_low, 3), ", ", round(conf_high, 3), "]"),
+    effect_of_10pct_depreciation = round(ten_percent_effect, 3),
+    n
+  )
+
+knitr::kable(
+  reg_print,
+  caption = "Effect of tenge depreciation on monthly CPI inflation",
+  booktabs = TRUE
+)
+```
+
+```{r fig3, out.width='86%', fig.cap='OLS and IV estimates of exchange-rate pass-through'}
+knitr::include_graphics(path_here("Output", "figure3_pass_through_estimates.png"))
+```
+
+The IV coefficient is `r fmt(iv_beta)` with a Newey-West standard error of `r fmt(iv_se)` and a p-value of `r fmt_p(iv_p)`. The point estimate implies that a 1 percent Brent-predicted depreciation is associated with a `r fmt(iv_beta)` percentage-point change in monthly CPI inflation. For a 10 percent predicted depreciation, the implied change is `r fmt(iv_ten)` percentage points. The confidence interval is wide, from `r fmt(iv_ten_low)` to `r fmt(iv_ten_high)`, and includes zero. Therefore the preferred IV specification does not provide evidence that Brent-predicted depreciation increases monthly CPI inflation.
+
+The OLS estimate is `r fmt(ols_beta)`, which is positive and statistically significant. This means that ordinary tenge depreciation is associated with higher monthly inflation in the raw conditional relationship. The IV result changes that conclusion. Once the exchange-rate variation is limited to the part predicted by Brent oil price changes, the estimate becomes negative and statistically insignificant. A plausible interpretation is that oil price declines both weaken the tenge and reduce some price pressures directly. If that direct oil-price channel is present, the exclusion restriction is not fully satisfied, and the IV coefficient cannot be interpreted as pure exchange-rate pass-through.
+
+# Robustness and Interpretation
+
+```{r robustness-table}
+rob_print <- robustness %>%
+  transmute(
+    specification,
+    outcome,
+    estimate = round(estimate, 3),
+    std_error = round(std_error, 3),
+    p_value = fmt_p(p_value),
+    ci_95 = paste0("[", round(conf_low, 3), ", ", round(conf_high, 3), "]"),
+    effect_of_10pct_depreciation = round(ten_percent_effect, 3),
+    n
+  )
+
+knitr::kable(
+  rob_print,
+  caption = "Robustness checks for the IV pass-through estimate",
+  booktabs = TRUE
+)
+```
+
+```{r fig4, out.width='88%', fig.cap='Robustness of the IV pass-through estimate'}
+knitr::include_graphics(path_here("Output", "figure4_robustness.png"))
+```
+
+The robustness checks show how sensitive the estimate is to additional assumptions. Adding a linear trend asks whether the baseline result is mainly capturing long-run disinflation. Adding annual macro controls asks whether GDP growth, money supply, and oil rents absorb part of the oil-driven exchange-rate channel. Excluding August through December 2015 checks whether the results are driven only by the large exchange-rate adjustment around the move to a more flexible exchange-rate regime. The three-month cumulative response asks whether pass-through appears over a short horizon rather than only in the same month.
+
+Across these checks, the point estimates remain negative and imprecise. This strengthens the main conclusion: the project finds a positive OLS association between tenge depreciation and inflation, but it does not find robust IV evidence that the portion of depreciation predicted by Brent shocks increases CPI inflation. This is not surprising for a monthly macroeconomic IV design with a small open economy. The identifying variation is real, but it is modest and concentrated in a limited number of oil and exchange-rate episodes.
+
+# Limitations
+
+The largest limitation is the exclusion restriction. Brent oil prices may affect Kazakhstan's CPI through channels other than the exchange rate. For example, oil prices can affect domestic fuel prices, fiscal spending, income expectations, and the balance of payments. Month fixed effects and lagged inflation reduce some confounding, but they do not remove all possible channels.
+
+A second limitation is sample length. The monthly CPI file ends in January 2019, so the analysis misses several recent shocks. The project uses all monthly CPI observations available in the provided raw file, but a longer CPI series would allow a stronger test of whether pass-through changed after 2019.
+
+A third limitation is aggregation. Monthly averages are useful for matching daily financial data to monthly inflation, but they hide within-month timing. If the exchange rate moves at the end of a month, CPI may respond in the next month. The three-month robustness check partially addresses this issue, but a richer model could estimate a distributed lag of pass-through.
+
+# Conclusion
+
+The evidence does not support the claim that Brent-predicted tenge depreciation increases consumer price inflation in Kazakhstan. The first stage behaves as expected for an oil-exporting economy: Brent price increases are associated with less tenge depreciation, while oil price declines predict depreciation pressure. But in the preferred IV specification, a 10 percent Brent-predicted depreciation is associated with a `r fmt(iv_ten)` percentage-point change in monthly CPI inflation, and the estimate is statistically insignificant.
+
+The result is still economically informative. It shows that exchange-rate movements and inflation are positively correlated in OLS, but the oil-price instrument does not isolate a clean positive pass-through channel. This likely reflects the fact that oil shocks can move both the exchange rate and inflation through several channels at once. A good next step would be to extend the monthly CPI data beyond 2019 and estimate separate pass-through for food, non-food goods, and services, where direct oil-price effects and import exposure may differ.
+
+# Replication Package
+
+The replication folder follows the requested structure. `Raw_data` contains the original data files. `Code_database/01_build_monthly_data.R` creates the cleaned monthly dataset in `Derived`. `Code_estimation/02_estimate_results.R` creates the descriptive table, first-stage table, main regression table, and Figures 1-3. `Code_appendix/03_robustness_checks.R` creates the robustness table and Figure 4. `run_all.R` runs the whole workflow and renders this paper.
+
+# References
+
+Burstein, Ariel, and Gita Gopinath. 2014. "International Prices and Exchange Rates." In *Handbook of International Economics*, Vol. 4.
+
+Campa, Jose Manuel, and Linda S. Goldberg. 2005. "Exchange Rate Pass-Through into Import Prices." *Review of Economics and Statistics* 87(4): 679-690.
+
+Bureau of National Statistics of Kazakhstan. Consumer price index data files used in this replication package.
+
+Federal Reserve Bank of St. Louis. FRED daily Brent crude oil price file used in this replication package.
+
+National Bank of Kazakhstan. USD/KZT exchange-rate file used in this replication package.
+
+World Bank. Kazakhstan macroeconomic indicators file used in this replication package.

@@ -1,0 +1,15 @@
+variable,description
+date,First day of the month used as the monthly date.
+cpi_index,"Consumer price index, previous month = 100."
+inflation_mom,"Monthly CPI inflation, 100 * log(CPI index / 100)."
+inflation_pct,"Monthly CPI inflation in simple percent points, CPI index - 100."
+brent_price,Average daily Brent crude oil price in USD during the month.
+oil_log_change,"Monthly log change in average Brent price, in percent."
+usd_kzt,"Average daily nominal exchange rate, Kazakhstani tenge per US dollar."
+dep_kzt,"Monthly log change in USD/KZT, in percent; positive means tenge depreciation."
+gdp_growth,Annual real GDP growth from the World Bank file.
+money_supply,Annual money supply variable from the World Bank file.
+gdp_deflator,Annual GDP deflator inflation from the World Bank file.
+oil_rents,Annual oil rents variable from the World Bank file.
+lag_inflation,One-month lag of monthly CPI inflation.
+inflation_3m,"Current plus next two months of CPI inflation, used in robustness checks."
