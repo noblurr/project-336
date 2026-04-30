@@ -78,23 +78,23 @@ This project connects to the exchange-rate pass-through literature, which studie
 
 # Data
 
-The replication package uses the raw files provided in the project folder. Daily Brent crude oil prices are from the FRED file `fred_dcoilbrenteu.csv`. Daily USD/KZT exchange rates are from the National Bank of Kazakhstan file `nationalbank_usd_kzt_exchange_rate.xlsx`. Monthly CPI data are from `kazakhstan_indexcpi_statbureau.csv`, where each month is reported as an index with the previous month equal to 100. The World Bank macro file is used for annual context and one robustness check. Additional CPI source spreadsheets are retained in `Raw_data` for documentation but are not needed for the baseline monthly estimation.
+For this project we collected data from the reliable sources and put it in project's file as raw files for the replication package. The data for daily Brent crude oil prices was from the FRED file `fred_dcoilbrenteu.csv`; daily USD/KZT exchange rates were gathered from the National Bank of Kazakhstan file `nationalbank_usd_kzt_exchange_rate.xlsx`; and monthly CPI data is from `kazakhstan_indexcpi_statbureau.csv`, where each month is reported as an index and where the previous month is equal to 100. The World Bank macro file is used to give an annual context and to complete a single robustness check. Additional CPI sources are in `Raw_data` and are applicable for documentation but are not needed for the baseline monthly estimations.
 
-The key limitation is that the monthly CPI file ends in January 2019. Brent and exchange-rate files continue beyond that date, but the estimation must stop where the monthly inflation outcome stops. The final baseline sample runs from March 2000 through January 2019 because one lag of inflation is included as a control.
+However we have one key limitation that is the monthly CPI file ending in January 2019. Despite tha Brent and exchange-rate files continue beyond 2019, the estimation must stop with the last monthly inflation outcome. Therefore, the final baseline sample runs from March 2000 through January 2019 because inflation is included as a control.
 
-The cleaning code makes three main transformations. First, daily Brent prices are averaged to the month and converted into monthly log changes:
+Our code for cleaning makes three main transformations. At first, it averages daily Brent prices to the month and converts into monthly log changes:
 
 \[
 \Delta oil_t = 100 \times \left[\log(Brent_t) - \log(Brent_{t-1})\right].
 \]
 
-Second, daily exchange rates are averaged to the month and converted into tenge depreciation:
+Secondly, daily exchange rates are averaged to the month too and changes to tenge depreciation:
 
 \[
 \Delta e_t = 100 \times \left[\log(USD/KZT_t) - \log(USD/KZT_{t-1})\right].
 \]
 
-Because the exchange rate is tenge per US dollar, a positive value means the tenge depreciated. Third, CPI inflation is constructed from the monthly CPI index:
+Since the exchange rate we have is KZT per USD, a positive value in our calculation means the tenge is depreciated. Third, CPI inflation is constructed from the monthly CPI indexes:
 
 \[
 \pi_t = 100 \times \log(CPIIndex_t / 100).
@@ -127,7 +127,7 @@ knitr::kable(
 knitr::include_graphics(path_here("Output", "figure1_time_series.png"))
 ```
 
-Figure 1 shows the basic time-series patterns. The exchange rate is relatively stable for parts of the early sample and then rises sharply during depreciation episodes. Inflation is usually low month to month, but it spikes around large exchange-rate movements. Brent prices are volatile, especially during the global financial crisis and the 2014-2016 oil-price decline. These patterns motivate the instrumental-variables design: oil price shocks are visible in the exchange-rate series and provide external variation in tenge depreciation.
+Figure 1 above shows the basic time-series patterns: the exchange rate is relatively stable during early years and then rises sharply with depreciation periods; inflation is usually low month to month with sudden spikes around the large exchange-rate movements; brent prices are volatile, especially during the global financial crisis and the 2014-2016 oil-price decline. These patterns motivate the instrumental-variables design: oil price shocks are shown in the exchange-rate graph and provide external variation in tenge depreciation.
 
 # Econometric Model
 
