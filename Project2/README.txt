@@ -22,15 +22,15 @@ The replication code does not use specific directory path. It searches for Pando
 Folder guide:
 
 Raw_data:
-Contains the unmodified files used or retained for the project.
+Contains the unmodified files that we use.
 - fred_dcoilbrenteu.csv: daily Brent crude oil prices from FRED.
 - nationalbank_usd_kzt_exchange_rate.xlsx: daily USD/KZT exchange rates from the National Bank of Kazakhstan.
 - kazakhstan_indexcpi_statbureau.csv: monthly Kazakhstan CPI index, previous month = 100.
 - worldbank_kazakhstan_macro.csv: annual macro variables for Kazakhstan from the World Bank.
-- statgiv_cpi_regions.xlsx and statgov_index_of_price.xlsx: additional CPI/statistical source files retained with the raw data.
+- statgiv_cpi_regions.xlsx and statgov_index_of_price.xlsx: additional CPI/statistical source files.
 
 Code_database and Derived:
-- Code_database/01_build_monthly_data.R reads the raw Brent, exchange-rate, CPI, and World Bank files.
+- Code_database/01_build_monthly_data.R reads the raw Brent, exchange-rate, CPI and World Bank files.
 - It writes Derived/monthly_analysis_data.csv, Derived/worldbank_context.csv, and Derived/data_dictionary.csv.
 - The monthly dataset aggregates daily oil and exchange-rate data to monthly averages, reshapes CPI from wide to long format, and creates log changes.
 
@@ -55,5 +55,5 @@ Report:
 - Report/Oil_Price_Shocks_Kazakhstan.Rmd is the source file for the written project.
 - run_all.R renders Oil_Price_Shocks_Kazakhstan.pdf in the project root when Pandoc and LaTeX are available.
 
-Main empirical design:
-The package estimates a two-stage least squares model. The endogenous variable is monthly tenge depreciation, measured as the monthly log change in average USD/KZT. The instrument is the monthly log change in average Brent crude oil prices. The outcome is monthly CPI inflation, measured as 100 * log(CPI index / 100). The baseline controls are month fixed effects and lagged inflation. Newey-West standard errors are used for time-series autocorrelation.
+Main model design:
+The package estimates a two-stage least squares model. The endogenous variable is monthly tenge depreciation, measured as the monthly log change in average USD/KZT. The instrumental variable is the monthly log change in average crude oil prices. The outcome is monthly CPI inflation, measured as 100 * log(CPI index / 100). The baseline controls are monthly fixed effects and lagged inflation.
