@@ -62,7 +62,7 @@ Our project asks if a depreciation of the Kazakhstan's currency - tenge - increa
 
 # Research Question and Motivation
 
-Kazakhstan is a useful case for studying exchange-rate pass-through because the economy is highly exposed to oil prices and the tenge has experienced several large exchange-rate movements during the sample period. In the raw data, Brent prices, USD/KZT, and inflation move together around major stress episodes such as 2008-2009 and 2014-2016. These episodes make the question economically important: when a depreciation happens, households care about whether it quickly appears in consumer prices, and policymakers care about whether inflation is mainly imported through the exchange rate or driven by domestic demand.
+A good starting point to test this concept is Kazakhstan, where there are both a high dependency on oil price fluctuations and several pronounced changes in exchange rates that occurred over time. In terms of observed data, the correlation between the Brent price index, exchange rate, and the level of inflation can be found at times when significant economic stress occurred in 2008-2009 and 2014-2016. These events render the topic economically interesting since households worry about the speed of pass-through and policymakers concern about inflation drivers.
 
 The research question is:
 
