@@ -202,10 +202,6 @@ knitr::kable(
 )
 ```
 
-
-
-
-
 ```{r fig3, out.width='86%', fig.cap='OLS and IV estimates of exchange-rate pass-through'}
 knitr::include_graphics(path_here("Output", "figure3_pass_through_estimates.png"))
 ```
