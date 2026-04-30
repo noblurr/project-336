@@ -8,6 +8,9 @@ output:
     latex_engine: pdflatex
     number_sections: true
     toc: false
+header-includes:
+  - \usepackage{float}
+  - \floatplacement{figure}{H}
 fontsize: 11pt
 geometry: margin=1in
 ---
