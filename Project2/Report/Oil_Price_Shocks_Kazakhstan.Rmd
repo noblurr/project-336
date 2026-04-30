@@ -238,21 +238,21 @@ Across these checks, the point estimates remain negative and imprecise. This str
 
 # Limitations
 
-The largest limitation is the exclusion restriction. Brent oil prices may affect Kazakhstan's CPI through channels other than the exchange rate. For example, oil prices can affect domestic fuel prices, fiscal spending, income expectations, and the balance of payments. Month fixed effects and lagged inflation reduce some confounding, but they do not remove all possible channels.
+One of the main limitation is the exclusion restriction. Oil prices can affect Kazakhstan's CPI not only through exchange rate. For example, oil prices can affect government spending, income expectations or subsidies, which in turn can affect CPI.
 
-A second limitation is sample length. The monthly CPI file ends in January 2019, so the analysis misses several recent shocks. The project uses all monthly CPI observations available in the provided raw file, but a longer CPI series would allow a stronger test of whether pass-through changed after 2019.
+Sample size is another concern. The monthly CPI data ends on January 2019, so the analysis misses several shocks. The project uses all monthly CPI observations available in the provided raw file, but a larger data of CPI would allow a stronger analysis.
 
-A third limitation is aggregation. Monthly averages are useful for matching daily financial data to monthly inflation, but they hide within-month timing. If the exchange rate moves at the end of a month, CPI may respond in the next month. The three-month robustness check partially addresses this issue, but a richer model could estimate a distributed lag of pass-through.
+Third limitation is aggregation of data. Our sample captures only monthly averages, which are useful for matching daily financial data to monthly inflation, but they miss daily variation, so in that sense we can observe only marco-level movement, instead of desired micro-level one. If the exchange rate changed at the end of a month, CPI would lag behing and respond only next month. The three-month robustness check partially addresses this issue, but a richer model might show detailed changes and analysis.
 
 # Conclusion
 
-The evidence does not support the claim that Brent-predicted tenge depreciation increases consumer price inflation in Kazakhstan. The first stage behaves as expected for an oil-exporting economy: Brent price increases are associated with less tenge depreciation, while oil price declines predict depreciation pressure. But in the preferred IV specification, a 10 percent Brent-predicted depreciation is associated with a `r fmt(iv_ten)` percentage-point change in monthly CPI inflation, and the estimate is statistically insignificant.
+The evidence does not show that Brent-predicted tenge depreciation affects consumer price inflation in Kazakhstan. First stage behaves as expected for an oil-exporting economy: Brent price increases are associated with less tenge depreciation, while oil price decreases are associated with depreciation. But using IV model, a 10 percent Brent-predicted depreciation is associated with a `r fmt(iv_ten)` percentage-point change in monthly CPI inflation and the estimate is statistically insignificant.
 
-The result is still economically informative. It shows that exchange-rate movements and inflation are positively correlated in OLS, but the oil-price instrument does not isolate a clean positive pass-through channel. This likely reflects the fact that oil shocks can move both the exchange rate and inflation through several channels at once. A good next step would be to extend the monthly CPI data beyond 2019 and estimate separate pass-through for food, non-food goods, and services, where direct oil-price effects and import exposure may differ.
+The result is still informative. It shows that exchange-rate movements and inflation are positively correlated in OLS, but the oil-price would not suit as an instrument variable. This finding illustrates that oil shocks can affect both the exchange rate and inflation, especially in oil-dependent economies such as Kazakhstan. To improve the research, it would be helpful to extend the monthly CPI data beyond 2019 and estimate its effect on food, non-food goods and services, where the role of oil-price and import exposure may differ.
 
 # Replication Package
 
-The replication folder follows the requested structure. `Raw_data` contains the original data files. `Code_database/01_build_monthly_data.R` creates the cleaned monthly dataset in `Derived`. `Code_estimation/02_estimate_results.R` creates the descriptive table, first-stage table, main regression table, and Figures 1-3. `Code_appendix/03_robustness_checks.R` creates the robustness table and Figure 4. `run_all.R` runs the whole workflow and renders this paper.
+The replication folder is structured as follows. `Raw_data` contains the original data files. `Code_database/01_build_monthly_data.R` creates the cleaned monthly dataset in `Derived`. `Code_estimation/02_estimate_results.R` creates the descriptive table, first-stage table, main regression table, and Figures 1-3. `Code_appendix/03_robustness_checks.R` creates the robustness table and Figure 4. `run_all.R` runs the whole workflow and renders this paper.
 
 # References
 
