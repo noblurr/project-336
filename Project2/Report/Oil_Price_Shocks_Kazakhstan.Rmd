@@ -62,15 +62,19 @@ Our project asks if a depreciation of the Kazakhstan's currency - tenge - increa
 
 # Research Question and Motivation
 
-A good starting point to test this concept is Kazakhstan, where there are both a high dependency on oil price fluctuations and several pronounced changes in exchange rates that occurred over time. In terms of observed data, the correlation between the Brent price index, exchange rate, and the level of inflation can be found at times when significant economic stress occurred in 2008-2009 and 2014-2016. These events render the topic economically interesting since households worry about the speed of pass-through and policymakers concern about inflation drivers.
+Our chosen country, Kazakhstan, is a good case to study how exchange-rate passes through because the economy here is depended on oil prices and the currency, tenge, has
+gone through some large exchange-rate movements during the sample period. In the raw data: Brent prices, USD/KZT, and inflation go together around major stress 
+episodes, like 2008-2009 and 2014-2016. These episodes make the question economically important because when a depreciation happens to currency, households immediately 
+think about whether the depreciation quickly appears in consumer prices. Also policymakers care about whether inflation rate is mostly imported through the exchange 
+rate or driven by domestic demand.
 
-The research question is:
+Our research question is:
 
 > Does depreciation of the Kazakhstani tenge, predicted by changes in global Brent crude oil prices, increase consumer price inflation?
 
-The phrase "predicted by Brent crude oil prices" is important. A simple regression of inflation on the exchange rate may be biased because the exchange rate responds to the same inflation expectations, policy changes, and macroeconomic shocks that influence prices. I therefore use Brent oil price changes as an instrument for tenge depreciation. Kazakhstan is an oil producer, so negative oil price shocks should weaken export revenue, reduce foreign-exchange inflows, and put downward pressure on the tenge. The instrumented estimate is intended to isolate the part of depreciation that comes from external oil-market shocks rather than from domestic inflation itself.
+The phrase "predicted by Brent crude oil prices" is very important in this context. The simple regression of inflation on the exchange rate can be biased because the exchange rate responds to the same things that influence prices, such as inflation expectations, policy changes, and macroeconomic shocks. Therefore, we use in our research Brent oil price changes as an instrument for tenge depreciation. As we know, Kazakhstan is an oil producer, so negative oil price shocks should weaken export revenue. Also it needs to reduce foreign-exchange inflows and put downward pressure on the tenge. We used the instrumented estimate to isolate the part of depreciation which comes from external oil-market shocks rather than from domestic inflation itself.
 
-This project connects to the exchange-rate pass-through literature, which studies how exchange-rate movements affect import prices and consumer prices. A common result in this literature is that pass-through is incomplete and varies by country, monetary-policy credibility, inflation history, and the imported share of consumption. For Kazakhstan, the topic is especially relevant because oil prices can move the exchange rate even when domestic consumer demand has not changed. That gives the project a clear empirical source of variation, while also creating a real identification challenge: oil prices may affect inflation through channels other than the exchange rate.
+This project connects to the exchange-rate pass-through literature, which studies how exchange-rate movements affect import prices and consumer prices. This literature gives a common result that pass-through is incomplete and varies by other factors, like country, monetary-policy credibility, inflation history, and the imported share of consumption. The topic is especially relevant for Kazakhstan because oil prices can move the exchange rate even when domestic consumer demand has not changed. That gives the project a clear empirical source of variation. But it also creates a challenge, which is that oil prices could influence inflation through other means besides the exchange rate.
 
 # Data
 
@@ -232,9 +236,10 @@ knitr::kable(
 knitr::include_graphics(path_here("Output", "figure4_robustness.png"))
 ```
 
-The robustness checks show how sensitive the estimate is to additional assumptions. Adding a linear trend asks whether the baseline result is mainly capturing long-run disinflation. Adding annual macro controls asks whether GDP growth, money supply, and oil rents absorb part of the oil-driven exchange-rate channel. Excluding August through December 2015 checks whether the results are driven only by the large exchange-rate adjustment around the move to a more flexible exchange-rate regime. The three-month cumulative response asks whether pass-through appears over a short horizon rather than only in the same month.
+The robustness checks illustrate how much sensitivity there is to imposing further assumptions. Incorporating a linear trend examines whether the initial finding reflects largely the disinflationary effect. Incorporating the annual control variables investigates whether GDP growth, money supply, and oil rents absorb part of the oil-driven exchange-rate channel. Excluding August-to-December period investigates whether the results arise exclusively due to the significant exchange rate movements during the switch to the floating exchange rate regime. The three-month cumulative response examines whether pass-through takes place within a short time period.
 
-Across these checks, the point estimates remain negative and imprecise. This strengthens the main conclusion: the project finds a positive OLS association between tenge depreciation and inflation, but it does not find robust IV evidence that the portion of depreciation predicted by Brent shocks increases CPI inflation. This is not surprising for a monthly macroeconomic IV design with a small open economy. The identifying variation is real, but it is modest and concentrated in a limited number of oil and exchange-rate episodes.
+Regardless of which test is performed, the point estimates continue to be negative and imprecise. This confirms the overall conclusion of the project. The project finds that there is a positive OLS relationship between tenge depreciation and inflation, but it does not find robust IV evidence that the part of depreciation driven by Brent shocks raises consumer price inflation. This is expected given that it is a monthly macroeconomic IV specification for a small economy. The underlying identifying variation is real, although it is modest and occurs in just a few instances.
+
 
 # Limitations
 
