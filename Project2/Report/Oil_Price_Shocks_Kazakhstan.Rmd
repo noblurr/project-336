@@ -1,7 +1,7 @@
 ---
 title: "Oil Price Shocks, Exchange Rate, and Inflation in Kazakhstan"
 subtitle: "ECON 336 - Programming for Economics"
-author: ""
+author: "Bono Almatov, Madiyar Serik, Mukhamediyar Nurzhanov, Nurkhan Utibayev"
 date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output:
   pdf_document:
@@ -141,15 +141,15 @@ The second stage is:
 \pi_t = \beta \widehat{\Delta e_t} + \gamma \pi_{t-1} + \lambda_m + u_t.
 \]
 
-The parameter of interest is \(\beta\). It measures the percentage-point change in monthly CPI inflation caused by a 1 percent depreciation of the tenge, using only the depreciation predicted by Brent oil price shocks. The corresponding effect of a 10 percent predicted depreciation is \(10\beta\).
+The parameter we are interested about is \(\beta\). It tells us the percentage-point change in monthly CPI inflation from a 1 percent depreciation of the tenge, using only the depreciation component that's predicted by Brent oil price shocks. The effect of a 10 percent predicted depreciation is just \(10\beta\).
 
-The identifying assumptions are:
+For this to work, we need three assumptions to hold:
 
-1. **Relevance.** Brent price changes must predict tenge depreciation. This is plausible because oil is a major export revenue source for Kazakhstan, and lower oil prices tend to weaken the currency.
-2. **Exclusion.** Conditional on lagged inflation and month fixed effects, Brent price changes must affect monthly CPI inflation only through the exchange rate. This assumption is the most demanding. Oil prices could also affect domestic fuel prices, government revenue, expectations, or demand. For that reason, the estimate should be read as an IV pass-through estimate under a maintained exclusion assumption, not as a completely mechanical causal fact.
-3. **Timing and exogeneity.** Kazakhstan's monthly CPI inflation does not drive global Brent prices. This is credible because Kazakhstan is small relative to the global oil market.
+1. **Relevance.** Brent price changes have to predict tenge depreciation. This is should be true because oil is a major export revenue source for Kazakhstan, and lower oil prices tend to weaken the currency.
+2. **Exclusion.** Brent price changes should affect monthly CPI inflation only through the exchange rate after adjusting for lagged inflation and month fixed effects. This assumption is complicated for several reasons. Oil prices could also affect domestic fuel prices, government revenue, expectations, or demand. Because of this, the estimate should not be interpreted purely mechanical causal fact but rather as an IV pass-through estimate under a maintained exclusion assumption.
+3. **Timing and exogeneity.** Global Brent prices are not influenced by Kazakhstan's monthly CPI inflation. This is because Kazakhstan is small relative to the global oil market.
 
-All reported standard errors are Newey-West standard errors with four lags. This choice allows for short-run serial correlation and heteroskedasticity in monthly macroeconomic data.
+In order to address serial correlation and heteroskedasticity that are typical of monthly macro data, all standard errors are Newey-West with four flags.
 
 # Results
 
