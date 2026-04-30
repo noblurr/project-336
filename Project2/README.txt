@@ -9,15 +9,15 @@ The OLS relationship between tenge depreciation and monthly inflation is positiv
 
 How to run the replication package:
 1. Open Oil_Price_Shocks_Kazakhstan.Rproj in RStudio.
-2. Run source ("run_all.R") from the project root.
-3. The script rebuilds the cleaned data, estimation tables, figures, robustness checks, and the paper PDF.
+2. Run source("run_all.R") from the project root.
+3. The script rebuilds the cleaned data, estimation tables, figures, robustness checks and the paper PDF.
 
 Required R packages:
 tidyverse, readxl, lubridate, AER, sandwich, lmtest, broom, scales, knitr, rmarkdown, tinytex.
 The setup script installs missing packages from CRAN if needed.
 
 PDF rendering note:
-The replication code does not use computer-specific paths. It searches for Pandoc through RStudio/Quarto/PATH and searches for LaTeX through PATH or an installed TinyTeX distribution. If the tables and figures run but the PDF does not render on a new device, install TinyTeX once in R with tinytex::install_tinytex(), then rerun source("run_all.R").
+The replication code does not use specific directory path. It searches for Pandoc through RStudio/Quarto/PATH and searches for LaTeX through PATH or an installed TinyTeX distribution. If the tables and figures run but the PDF does not render, please, install TinyTeX once in R with tinytex::install_tinytex(), then rerun source("run_all.R").
 
 Folder guide:
 
