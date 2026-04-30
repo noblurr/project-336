@@ -161,7 +161,7 @@ In order to address serial correlation and heteroskedasticity that are typical o
 knitr::include_graphics(path_here("Output", "figure2_first_stage.png"))
 ```
 
-The first-stage coefficient on Brent price changes is `r fmt(fs_beta)`. This means that a 10 percent increase in Brent prices predicts `r fmt(10 * fs_beta)` percentage points of tenge depreciation. Since the coefficient is negative, the interpretation is appreciation pressure when oil prices increase and depreciation pressure when oil prices fall. The robust first-stage F statistic is `r fmt(fs_f)`. This shows statistically visible relevance, but it is below the common rule-of-thumb value of 10, so the IV estimates should be interpreted with weak-instrument caution.
+The first-stage coefficient on Brent price changes is `r fmt(fs_beta)` and indicates an inverse relationshsip between oil and the tenge. So a 10 percent increase in Brent prices predicts `r fmt(10 * fs_beta)` percentage points of tenge depreciation. This means the tenge gains value when oil prices rise and loses value when they fall. Since the coefficient is negative, the interpretation is appreciation pressure when oil prices increase and depreciation pressure when oil prices fall. The first-stage F statistic is `r fmt(fs_f)`. This is below the standard threshold of 10, meaning the instruments are relatively weak. Thus, we should interperet IV estimates with caution. 
 
 ```{r first-stage-table}
 fs_print <- first_stage %>%
