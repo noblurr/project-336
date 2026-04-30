@@ -247,7 +247,7 @@ One of the main limitation is the exclusion restriction. Oil prices can affect K
 
 Sample size is another concern. The monthly CPI data ends on January 2019, so the analysis misses several shocks. We relied on monthly CPI observations available in the provided raw file, but a larger data of CPI would allow a stronger analysis.
 
-Third limitation is aggregation of data. Our sample captures only monthly averages, which are useful for matching daily financial data to monthly inflation, but they miss daily variation, so in that sense we can observe only marco-level movement, instead of desired micro-level one. If the exchange rate changed at the end of a month, CPI would lag behing and respond only next month. The three-month robustness check partially addresses this issue, but a richer model might show detailed changes and analysis.
+Third limitation is aggregation of data. Our sample captures only monthly averages, which are useful for matching daily financial data to monthly inflation, but they miss daily variation, so in that sense we can observe only marco-level movement, instead of desired micro-level one. If the exchange rate changed at the end of a month, CPI would lag behind and respond only next month. We partially solved it using three-month robustness check, but a richer data would show more detailed changes.
 
 # Conclusion
 
